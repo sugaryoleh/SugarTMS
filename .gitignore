@@ -1,2 +1,7 @@
-/venv
-
+venv
+.idea
+.gitignore
+db.sqlite3
+files
+**/__pycache__
+app/migrations
