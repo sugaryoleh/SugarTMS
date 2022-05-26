@@ -49,25 +49,44 @@ class Load(Model):
             return None
 
     @staticmethod
+    def get_load_stages(load, type=True):
+        return LoadUnloadStage.objects.filter(load=load.id).filter(type=type).order_by('order_number')
+
+    @staticmethod
     def get_last_del_stage(load):
         del_stages = LoadUnloadStage.objects.filter(load=load.id).filter(type=False).order_by('-order_number')
         if del_stages:
             return del_stages[0]
         return None
 
-    def get_empty_miles(self):
-        if self.driver:
-            last_unload_stage = Driver.get_last_unload_stage(self.driver)
-            if last_unload_stage:
-                last_location = last_unload_stage.facility.address
+    @staticmethod
+    def get_previous_load(load):
+        lds = load.get_last_del_stage(load)
+        previous_unloads = LoadUnloadStage.objects.filter(type=False).filter(time_to__lt=lds.time_to).order_by('-time_to')
+        if not previous_unloads:
+            return None
+        previous_unload_stage = previous_unloads[0]
+        return Load.objects.get(id=previous_unload_stage.load.id)
+
+    @staticmethod
+    def get_empty_miles(load):
+        if load.driver:
+            previous_load = Load.get_previous_load(load)
+            if previous_load:
+                last_location = Load.get_last_del_stage(previous_load).facility.address
             else:
                 last_location = CarrierCompany.objects.get(is_main=True).address
-            print(last_location)
-            print(Load.get_first_pu_stage(self).facility.address)
-            DistanceCalculator.calculate([last_location, Load.get_first_pu_stage(self).facility.address])
+            first_pickup = Load.get_first_pu_stage(load).facility.address
+            distance = DistanceCalculator.calculate([last_location, first_pickup])
+            return round(distance)
+        else:
+            return None
 
     def get_loaded_miles(self):
-        pass
+        load_stages = list(load.facility.address for load in Load.get_load_stages(self, type=True))
+        unload_stages = list(load.facility.address for load in Load.get_load_stages(self, type=False))
+        distance = DistanceCalculator.calculate(load_stages+unload_stages)
+        return round(distance)
 
     def set_TONU(self):
         pass
@@ -97,8 +116,27 @@ class LoadUnloadStage(Model):
     facility = ForeignKey(Facility, on_delete=RESTRICT)
     note = TextField(max_length=50, null=True, blank=True)
 
+    types = {
+        True: 'Pick-up',
+        False: 'Delivery'
+    }
+
     class Meta:
         unique_together = [['load', 'order_number', 'type'], ]
 
+    def save(self, *args, **kwargs):
+        self.order_number = LoadUnloadStage.get_next_stage_order(self, self.type)
+        super(LoadUnloadStage, self).save(*args, **kwargs)
+
+    @staticmethod
+    def get_next_stage_order(load_stage, type=True):
+        existing_stages = Load.get_load_stages(Load.objects.get(pk=load_stage.load.id), type=type)
+        if not existing_stages:
+            return 1
+        else:
+            last_stage = existing_stages[0]
+            return last_stage.order_number+1
+
     def __str__(self):
-        return 'Order# {}|Stage# {}|Facility: {}'.format(self.load.order_number, self.order_number, self.facility)
+        return 'Order# {}|Stage# {}|{}|Facility: {}'.format(self.load.order_number, self.order_number,
+                                                            self.types[self.type], self.facility)
