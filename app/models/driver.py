@@ -30,7 +30,7 @@ class Driver(Model):
     license_state = ForeignKey(State, on_delete=RESTRICT)
     hire_type = CharField(max_length=3, choices=HireType.choices)
     pay = PositiveSmallIntegerField(null=True, blank=True)
-    active = BooleanField(default=True)
+    is_active = BooleanField(default=True)
     notes = TextField(max_length=200, null=True, blank=True)
     coordinator = ForeignKey(Profile, on_delete=SET_NULL, null=True, validators=[validate_coordinator])
     truck = OneToOneField(Truck, on_delete=RESTRICT, null=True, blank=True)
@@ -45,3 +45,26 @@ class Driver(Model):
             middle_name = self.middle_name
 
         return '{} {} {}'.format(self.first_name, middle_name, self.last_name)
+
+    @staticmethod
+    def get_last_unload_stage(driver):
+        from app.models.load import Load
+        loads = Load.objects.filter(driver=driver.id)
+        if loads:
+            last_stages = [Load.get_last_del_stage(load) for load in loads]
+
+            def sort_key(e):
+                return e.time_to
+
+            last_stages.sort(reverse=True, key=sort_key)
+            last_stage = last_stages[0]
+            return last_stage
+        return None
+
+    @staticmethod
+    def get_last_load(driver):
+        from app.models.load import Load
+        last_stage = Driver.get_last_unload_stage(driver)
+        if last_stage:
+            return Load.objects.get(pk=last_stage.load.id)
+        return None

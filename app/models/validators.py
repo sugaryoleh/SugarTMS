@@ -61,3 +61,10 @@ def validate_logistics_company_rate(value):
         raise ValidationError(_('MC value must contain digits only'))
     if len(value) != rate_len:
         raise ValidationError(_('MC value length must be equal {}'.format(rate_len)))
+
+
+def driver_for_load_validator(value):
+    from app.models.driver import Driver
+    if not Driver.objects.get(pk=value).is_active:
+        raise ValidationError(_('Driver must be active to be assigned to the load'))
+
