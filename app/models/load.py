@@ -19,6 +19,7 @@ class Load(Model):
 
     class LoadStatus(TextChoices):
         AVAILABLE = 'Available', _('Available')
+        PENDING = 'Pending', _('Pending')
         IN_PPROGRESS = 'In progress', _('In progress')
         COMPLETED = 'Completed', _('Completed')
         INVOICED = 'Invoiced', _('Invoiced')
@@ -32,19 +33,20 @@ class Load(Model):
     driver = ForeignKey(Driver, on_delete=RESTRICT, validators=[driver_for_load_validator], null=True, blank=True)
     trailer = ForeignKey(Trailer, on_delete=RESTRICT, null=True, blank=True)
     empty_miles = PositiveSmallIntegerField(null=True, blank=True)  # todo: define on save method
-    loaded_miles = PositiveSmallIntegerField(null=True, blank=True)     # todo: define on save method
+    loaded_miles = PositiveSmallIntegerField(null=True, blank=True)  # todo: define on save method
     group = CharField(max_length=6, choices=LoadGroup.choices)
     status = CharField(max_length=11, choices=LoadStatus.choices, default=LoadStatus.AVAILABLE)
-    TONU = BooleanField(default=False) # add rule on save method
+    TONU = BooleanField(default=False)  # add rule on save method
     notes = TextField(max_length=100, null=True, blank=True)
     broker_company = ForeignKey(BrokerCompany, on_delete=RESTRICT)
 
     @staticmethod
     def get_first_pu_stage(load):
-        pu_stages = LoadUnloadStage.objects.filter(load=load.id).filter(type=True).order_by('order_number')
-        if pu_stages:
-            return pu_stages[0]
-        return None
+        try:
+            pu_stage = LoadUnloadStage.objects.filter(load=load.id).filter(type=True).get(order_number=1)
+            return pu_stage
+        except:
+            return None
 
     @staticmethod
     def get_last_del_stage(load):
@@ -96,7 +98,7 @@ class LoadUnloadStage(Model):
     note = TextField(max_length=50, null=True, blank=True)
 
     class Meta:
-        unique_together = [['load', 'order_number', 'type'],]
+        unique_together = [['load', 'order_number', 'type'], ]
 
     def __str__(self):
         return 'Order# {}|Stage# {}|Facility: {}'.format(self.load.order_number, self.order_number, self.facility)
