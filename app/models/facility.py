@@ -14,6 +14,10 @@ class Facility(Model):
     email = EmailField(null=True, blank=True)
     rating = FloatField(null=True, blank=True)
 
+    class Meta:
+        unique_together = [('name', 'address')]
+        verbose_name_plural = 'facilities'
+
     def save(self, *args, **kwargs):
         from maps.places import PlaceResolver
         missing_fields = ['rating']
@@ -27,4 +31,4 @@ class Facility(Model):
         super(Facility, self).save(*args, **kwargs)
 
     def __str__(self):
-        return '{}'.format(self.name)
+        return '{}/ {},{}'.format(self.name, self.address.city, self.address.state.code)

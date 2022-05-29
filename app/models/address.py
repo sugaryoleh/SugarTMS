@@ -25,7 +25,8 @@ class Address(Model):
     building = PositiveSmallIntegerField()
 
     class Meta:
-        unique_together = ('country', 'state', 'city', 'zip', 'street', 'building')
+        unique_together = [('country', 'state', 'city', 'zip', 'street', 'building')]
+        verbose_name_plural = 'addresses'
 
     def __str__(self):
         return '{} {}, {}, {} {}, {}'.format(self.building, self.street, self.city, self.state.code, self.zip,

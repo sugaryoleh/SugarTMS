@@ -1,10 +1,10 @@
 from django.db.models import Model, AutoField, CharField, PositiveSmallIntegerField, ForeignKey, CASCADE, RESTRICT, \
-    TextField, ManyToManyField, OneToOneField
+    TextField, ManyToManyField
 
 from app.models.validators import validate_VIN, validate_unit_year
 
 
-class Unit:
+class Unit(Model):
     id = AutoField(primary_key=True)
     name = CharField(max_length=10, unique=True)
     year = PositiveSmallIntegerField(validators=[validate_unit_year])
@@ -38,7 +38,7 @@ class TrailerModel(UnitModel):
     make = ForeignKey(TrailerMake, on_delete=CASCADE)
 
 
-class Trailer(Model, Unit):
+class Trailer(Unit):
     model = ForeignKey(TrailerModel, on_delete=RESTRICT)
 
 
@@ -50,9 +50,9 @@ class TruckModel(UnitModel):
     make = ForeignKey(TruckMake, on_delete=CASCADE)
 
 
-class Truck(Model, Unit):
+class Truck(Unit):
     model = ForeignKey(TruckModel, on_delete=RESTRICT)
-    vin = CharField(max_length=10, validators=[validate_VIN])
+    vin = CharField(max_length=17, validators=[validate_VIN])
 
 
 class UnitGroup(Model):

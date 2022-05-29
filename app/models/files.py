@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from app.models.address import State
 from app.models.driver import Driver
+from app.models.load import Load
 from app.models.units import Trailer, Truck
 from app.models.profile import Profile
 
@@ -16,7 +17,9 @@ def get_file_path(instance, filename):
     elif instance.__class__ == TruckFile:
         folder = 'trucks/{}/'.format(instance.truck.id)
     elif instance.__class__ == TrailerFile:
-        folder = 'trailers/{}/'.format(instance.trailer.id),
+        folder = 'trailers/{}/'.format(instance.trailer.id)
+    elif instance.__class__ == LoadFile:
+        folder = 'loads/{}/'.format(instance.trailer.id)
     path = 'files/{}/{}'.format(folder, filename)
     return path
 
@@ -56,3 +59,18 @@ class TrailerFile(File):
 
 class TruckFile(File):
     truck = ForeignKey(Truck, on_delete=CASCADE)
+
+
+class LoadFile(File):
+    class FileType(TextChoices):
+        RC = 'RC', _('Rate confirmation')
+        RECEIPT = 'RECEIPT', _('Receipt')
+        BOL = 'BOL', _('Bill of landing')
+        PDO = 'POD', _('Proof of delivery')
+        INVOICE = 'INVOICE', _('Invoice')
+
+    type = CharField(max_length=7, choices=FileType.choices, null=True, blank=True)
+    load = ForeignKey(Load, on_delete=CASCADE)
+
+    def __str__(self):
+        return '{} {}'.format(self.load, self.type)

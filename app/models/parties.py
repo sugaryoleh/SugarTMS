@@ -1,7 +1,5 @@
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db.models import Model, AutoField, CharField, ForeignKey, RESTRICT, BooleanField
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.db.models import Model, AutoField, CharField, ForeignKey, RESTRICT, BooleanField, UniqueConstraint, Q
 from django.utils.translation import gettext_lazy as _
 
 from app.models.address import Address
@@ -27,23 +25,20 @@ class BrokerCompany(LogisticsCompany):
 class CarrierCompany(LogisticsCompany):
     is_main = BooleanField(default=False)
 
-    def save(self, *args, **kwargs):
-        existing = None
-        try:
-            existing = CarrierCompany.objects.get(pk=self.id)
-        except ObjectDoesNotExist:
-            pass
-        finally:
-            if existing:
-                if self.is_main != existing.is_main and True in [obj.is_main for obj in CarrierCompany.objects.all()]:
-                    raise ValidationError(_('The db must have one main CarrierCompany which is set once.'))
-            super(LogisticsCompany, self).save(args, kwargs)
+    def just_created(self):
+        return not CarrierCompany.objects.filter(pk=self.pk).exists()
 
-# @receiver(post_save, sender=CarrierCompany)
-# def save_carrier_company(sender, instance, **kwargs):
-#     if instance.is_main:
-#         mains = sender.objects.filter(is_main=True)
-#         for company in mains:
-#             if company != instance:
-#                 company.is_main = False
-#                 company.save()
+    def is_main_changed(self):
+        if not self.just_created():
+            return self.is_main != CarrierCompany.objects.get(pk=self.id).is_main
+
+    @staticmethod
+    def is_first():
+        return not CarrierCompany.objects.all().exists()
+
+    def save(self, *args, **kwargs):
+        if self.is_first() and not self.is_main:
+            raise Exception(_('The main Carrier Company must be created first'))
+        elif (self.is_main and self.just_created()) or self.is_main_changed():
+            raise Exception(_('The main Carrier Company must be set once'))
+        super(LogisticsCompany, self).save(args, kwargs)
