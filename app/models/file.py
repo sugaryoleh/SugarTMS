@@ -9,12 +9,3 @@ class File(Model):
     file = FileField(upload_to=route)
     notes = CharField(max_length=20, null=True, blank=True)
     added_by = ForeignKey(Profile, on_delete=SET_NULL, null=True, blank=True)
-
-
-
-
-
-
-
-
-
