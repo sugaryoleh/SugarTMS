@@ -1,7 +1,7 @@
 import datetime as datetime
 from django.db.models import Model, BigAutoField, DateTimeField, ForeignKey, CASCADE, CharField
 
-from app.models.load import Load
+from app.models.load.load import Load
 
 
 class LoadHistoryEvent(Model):
@@ -36,3 +36,13 @@ class LoadHistoryEvents:
     def invoice_created(load):
         text = 'Invoice# {} generated'.format(load.id)
         LoadHistoryEvent(load=load, text=text).save()
+
+    @staticmethod
+    def accessorial_created(accessorial):
+        text = 'Accessorial {} for order {} created'.format(accessorial.reason, accessorial.load)
+        LoadHistoryEvent(load=accessorial.load, text=text).save()
+
+    @staticmethod
+    def accessorial_deleted(accessorial):
+        text = 'Accessorial {} for order {} deleted'.format(accessorial.reason, accessorial.load)
+        LoadHistoryEvent(load=accessorial.load, text=text).save()

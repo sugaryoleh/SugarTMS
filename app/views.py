@@ -1,3 +1,8 @@
 from django.shortcuts import render
+from django.views.generic import ListView
 
-# Create your views here.
+from app.models.load.load import Load
+
+
+class LoadListView(ListView):
+    model = Load

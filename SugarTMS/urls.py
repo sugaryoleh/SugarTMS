@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from app.views import LoadListView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('loads/', LoadListView.as_view()),
 ]

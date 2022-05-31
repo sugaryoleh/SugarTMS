@@ -1,9 +1,8 @@
-from django.core.exceptions import ValidationError
 from django.db.models import BigAutoField, BooleanField, Model, ForeignKey, CASCADE, PositiveSmallIntegerField, \
     DateTimeField, RESTRICT, TextField
 
-from app.models.facility import Facility
-from app.models.load import Load
+from app.models.load.load import Load
+from app.models.location.facility import Facility
 
 
 class LoadStage(Model):

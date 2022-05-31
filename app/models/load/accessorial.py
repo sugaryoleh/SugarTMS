@@ -1,11 +1,10 @@
 from django.db.models import Model, TextChoices, AutoField, CharField, PositiveSmallIntegerField, ForeignKey, CASCADE
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
 from django.utils.translation import gettext_lazy as _
 
-from app.models.load import Load
-from app.models.loadhistoryevent import LoadHistoryEvent
+from app.models.load.load import Load
 
 
 class Accessorial(Model):
@@ -27,9 +26,21 @@ def add_to_load_total(sender, instance, **kwargs):
     load.save()
 
 
+@receiver(pre_delete, sender=Accessorial)
+def subtract_from_load_total(sender, instance, **kwargs):
+    load = Load.objects.get(pk=instance.load.id)
+    load.total -= instance.amount
+    load.save()
+
+
 @receiver(post_save, sender=Accessorial)
-def write_to_load_history(sender, instance, created, **kwargs):
+def accessorial_added(sender, instance, created, **kwargs):
     if created:
-        text = 'Accessorial {} for order {} created'.format(instance.reason, instance.load)
-        event = LoadHistoryEvent(load=instance.load, text=text)
-        event.save()
+        from app.models.load.loadhistoryevent import LoadHistoryEvents
+        LoadHistoryEvents.accessorial_created(accessorial=instance)
+
+
+@receiver(pre_delete, sender=Accessorial)
+def accessorial_deleted(sender, instance, **kwargs):
+    from app.models.load.loadhistoryevent import LoadHistoryEvents
+    LoadHistoryEvents.accessorial_deleted(accessorial=instance)

@@ -2,7 +2,7 @@ from django.db.models import Model, AutoField, CharField, ForeignKey, RESTRICT, 
 from phonenumber_field.modelfields import PhoneNumberField
 from requests import HTTPError
 
-from app.models.address import Address
+from .address import Address
 
 
 class Facility(Model):

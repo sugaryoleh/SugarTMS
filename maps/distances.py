@@ -3,7 +3,7 @@ import urllib
 import requests
 from urllib3.exceptions import HTTPError
 
-from app.models.address import Address
+from app.models.location.address import Address
 from maps.api_key import ApiKey
 
 

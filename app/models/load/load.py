@@ -1,14 +1,18 @@
+from django.core.files import File
 from django.db.models import Model, BigAutoField, BooleanField, ForeignKey, PositiveSmallIntegerField, \
     RESTRICT, TextField, CharField, TextChoices, QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from app.models.driver import Driver
-from app.models.parties import BrokerCompany
-from app.models.profile import Profile
-from app.models.units import Trailer
-from app.models.validators import validate_coordinator, driver_for_load_validator
+from app.models.driver.driver import Driver
+from app.models.driver.validators import validate_coordinator
+from app.models.load.validators import driver_for_load_validator
+from app.models.parties.brokercompany import BrokerCompany
+from app.models.parties.carriercompany import CarrierCompany
+from app.models.unit.trailer import Trailer
+from app.models.users.profile import Profile
+from file_generator.invoices import generate_invoice
 from maps.distances import DistanceCalculator
 
 
@@ -40,6 +44,7 @@ class Load(Model):
     notes = TextField(max_length=100, null=True, blank=True)
     broker_company = ForeignKey(BrokerCompany, on_delete=RESTRICT)
     dispatched = BooleanField(default=False)
+    invoice_generated = BooleanField(default=False, editable=False)
 
     def just_created(self):
         return not Load.objects.filter(pk=self.pk).exists()
@@ -55,7 +60,7 @@ class Load(Model):
         if not Load.LoadManager.perform_checks(self):
             raise Exception("Inappropriate status {} for the load".format(self.status))
         if self.load_status_changed():
-            from app.models.loadhistoryevent import LoadHistoryEvents
+            from app.models.load.loadhistoryevent import LoadHistoryEvents
             LoadHistoryEvents.status_changed(self)
         super(Load, self).save(*args, *kwargs)
 
@@ -70,15 +75,21 @@ class Load(Model):
 
     def get_accessorial_total(self):
         acum = 0
-        from app.models.accessorial import Accessorial
+        from app.models.load.accessorial import Accessorial
         for accessorial in Accessorial.objects.filter(load=self.id):
             acum += accessorial.amount
         return acum
 
+    def invoice(self):
+        carrier = CarrierCompany.objects.get(is_main=True)
+        file_name = generate_invoice(self, carrier)
+        from app.models.load.loadfile import LoadFile
+        LoadFile(type=LoadFile.FileType.INVOICE, load=self, file=File(open(file_name))).save()
+
     class LoadManager:
         @staticmethod
         def clean_load_stages(load):
-            from app.models.loadstage import LoadStage
+            from app.models.load.loadstage import LoadStage
             stages = LoadStage.objects.filter(load=load.id)
             if stages.exists():
                 for stage in stages:
@@ -86,7 +97,7 @@ class Load(Model):
 
         @staticmethod
         def get_first_pu_stage(load):
-            from app.models.loadstage import LoadStage
+            from app.models.load.loadstage import LoadStage
             pu_stage = LoadStage.objects.filter(load=load.id).filter(type=True).filter(order_number=1)
             if pu_stage.exists():
                 return pu_stage[0]
@@ -94,7 +105,7 @@ class Load(Model):
 
         @staticmethod
         def get_load_stages(load, type=True):
-            from app.models.loadstage import LoadStage
+            from app.models.load.loadstage import LoadStage
             load_stages = LoadStage.objects.filter(load=load.id).filter(type=type).order_by('order_number')
             if load_stages.exists():
                 return load_stages
@@ -102,7 +113,7 @@ class Load(Model):
 
         @staticmethod
         def get_last_del_stage(load):
-            from app.models.loadstage import LoadStage
+            from app.models.load.loadstage import LoadStage
             del_stages = LoadStage.objects.filter(load=load.id).filter(type=False).order_by('-order_number')
             if del_stages.exists():
                 return del_stages[0]
@@ -111,7 +122,7 @@ class Load(Model):
         @staticmethod
         def get_previous_load(load):
             lds = load.LoadManager.get_last_del_stage(load)
-            from app.models.loadstage import LoadStage
+            from app.models.load.loadstage import LoadStage
             previous_unloads = LoadStage.objects.filter(type=False).filter(time_to__lt=lds.time_to).order_by('-time_to')
             if previous_unloads.exists():
                 previous_unload_stage = previous_unloads[0]
@@ -121,7 +132,6 @@ class Load(Model):
         @staticmethod
         def get_empty_miles(load):
             if load.driver:
-                from app.models.parties import CarrierCompany
                 last_location = CarrierCompany.objects.get(is_main=True).address
                 previous_load = Load.get_previous_load(load)
                 if previous_load:
@@ -147,7 +157,7 @@ class Load(Model):
 
         @staticmethod
         def check_set_up(load):
-            from app.models.loadstage import LoadStage
+            from app.models.load.loadstage import LoadStage
             stages = LoadStage.objects.filter(load=load.id)
             return stages.filter(type=True).exists() and stages.filter(type=False).exists() and Load.LoadManager.check_order(stages)
 
@@ -185,11 +195,7 @@ class Load(Model):
 
         @staticmethod
         def check_invoiced(load):
-            from app.models.files import LoadFile
-            invoice = LoadFile.objects.filter(load=load.id).filter(type=LoadFile.FileType.INVOICE)
-            if invoice.exists():
-                return True
-            return False
+            return load.invoice_generated
 
         @staticmethod
         def perform_checks(load):
@@ -206,7 +212,6 @@ class Load(Model):
                                            Load.LoadManager.check_invoiced],
             }
             return all(check(load) for check in checks[load.status])
-
 
         @staticmethod
         def check_order(stages: QuerySet) -> bool:
@@ -237,11 +242,7 @@ class Load(Model):
 @receiver(post_save, sender=Load)
 def load_created(sender, instance, created, **kwargs):
     if created:
-        from app.models.loadhistoryevent import LoadHistoryEvents
+        from app.models.load.loadhistoryevent import LoadHistoryEvents
         LoadHistoryEvents.load_created(instance)
         if instance.driver is not None:
-            LoadHistoryEvents.driver_assigned()
-
-
-
-
+            LoadHistoryEvents.driver_assigned(instance)

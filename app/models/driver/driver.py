@@ -1,15 +1,14 @@
-from django.db.models import Model, TextChoices, AutoField, CharField, ForeignKey, RESTRICT, PositiveSmallIntegerField, \
-    EmailField, BooleanField, TextField, SET_NULL, CASCADE, OneToOneField
-
+from django.db.models import Model, TextChoices, AutoField, CharField, ForeignKey, RESTRICT, EmailField, \
+    PositiveSmallIntegerField, BooleanField, TextField, SET_NULL, CASCADE, OneToOneField
 from django.utils.translation import gettext_lazy as _
-
-from app.models.address import Address, State
 from phonenumber_field.modelfields import PhoneNumberField
 
-from app.models.parties import CarrierCompany
-from app.models.profile import Profile
-from app.models.units import Truck
-from app.models.validators import validate_driver_license, validate_coordinator
+from app.models.driver.validators import validate_driver_license, validate_coordinator
+from app.models.location.address import Address
+from app.models.location.state import State
+from app.models.parties.carriercompany import CarrierCompany
+from app.models.unit.truck import Truck
+from app.models.users.profile import Profile
 
 
 class Driver(Model):
@@ -48,7 +47,7 @@ class Driver(Model):
 
     @staticmethod
     def get_last_unload_stage(driver):
-        from app.models.load import Load
+        from app.models.load.load import Load
         loads = Load.objects.filter(driver=driver.id)
         if loads:
             last_stages = [Load.get_last_del_stage(load) for load in loads]
@@ -63,8 +62,8 @@ class Driver(Model):
 
     @staticmethod
     def get_last_load(driver):
-        from app.models.load import Load
         last_stage = Driver.get_last_unload_stage(driver)
         if last_stage:
+            from app.models.load.load import Load
             return Load.objects.get(pk=last_stage.load.id)
         return None

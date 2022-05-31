@@ -1,18 +1,7 @@
 from django.db.models import Model, CharField, AutoField, ForeignKey, RESTRICT, PositiveSmallIntegerField
 
-from app.models.validators import validate_zip_code
-
-
-class State(Model):
-    id = AutoField(primary_key=True)
-    name = CharField(max_length=50)
-    code = CharField(max_length=3)
-
-    class Meta:
-        unique_together = ('name', 'code')
-
-    def __str__(self):
-        return '{}'.format(self.code)
+from .state import State
+from .validators import validate_zip_code
 
 
 class Address(Model):

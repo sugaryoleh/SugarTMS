@@ -3,7 +3,7 @@ import urllib.parse
 import requests
 from urllib3.exceptions import HTTPError
 
-from app.models.facility import Facility
+from app.models.location.facility import Facility
 from maps.api_key import ApiKey
 
 
