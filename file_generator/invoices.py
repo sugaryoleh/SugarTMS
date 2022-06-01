@@ -23,7 +23,7 @@ def delete_file(path):
 
 
 def get_description(load):
-    from app.models.load import Load
+    from app.models.load.load import Load
 
     first_pu_address = Load.LoadManager.get_first_pu_stage(load).facility.address
     first_pu_address = '{}, {}'.format(first_pu_address.city, first_pu_address.state.code)
@@ -34,7 +34,7 @@ def get_description(load):
 
 def get_details(to_be_invoiced):
     details = []
-    from app.models.load import Load
+    from app.models.load.load import Load
     if isinstance(to_be_invoiced, Load):
         to_be_invoiced = [to_be_invoiced]
     for load in to_be_invoiced:
@@ -46,7 +46,7 @@ def get_details(to_be_invoiced):
 
 
 def generate_invoice(load, carrier):
-    from app.models.load import Load
+    from app.models.load.load import Load
 
     if not isinstance(load, Load):
         raise TypeError('Given argument \'load\' must be Load instance')
@@ -72,7 +72,7 @@ def generate_invoice(load, carrier):
 
 # def generate_invoice(to_be_invoiced, carrier, broker):
 #     doc = DocxTemplate(template_path)
-#     from app.models.load import Load
+#     from location.models.load import Load
 #     from django.db.models import QuerySet
 #     if isinstance(to_be_invoiced, Load):
 #         invoice_number = to_be_invoiced.id

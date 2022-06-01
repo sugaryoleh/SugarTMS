@@ -2,4 +2,6 @@ from app.models.parties.logisticscompany import LogisticsCompany
 
 
 class BrokerCompany(LogisticsCompany):
-    pass
+    class Meta:
+        verbose_name_plural = 'broker companies'
+
