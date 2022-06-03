@@ -1,0 +1,8 @@
+<html><body>
+<h1>{{ title }}</h1>
+<ul>
+    {% for object in objects %}
+    <li><a href="{% url detail_view_name pk=object.id %}">{{ object }}</a></li>
+    {% endfor %}
+</ul>
+</body></html>

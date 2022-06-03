@@ -2,9 +2,9 @@
 
 <html><body>
 
-<h1>Add state</h1>
+<h1>Add {{ title }}</h1>
 
-<form action="{% url 'state-add' %}" method="POST">
+<form action="{% url view_name %}" method="POST">
     {% csrf_token %}
     {% render_form serializer %}
     <input type="submit" value="Add">

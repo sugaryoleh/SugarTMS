@@ -1,9 +1,10 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import HyperlinkedModelSerializer
 
 from app.models.location.state import State
 
 
-class StateSerializer(ModelSerializer):
+class StateSerializer(HyperlinkedModelSerializer):
+
     class Meta:
         model = State
         fields = '__all__'

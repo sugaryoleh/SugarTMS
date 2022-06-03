@@ -4,10 +4,10 @@
 
 <h1>Delete state</h1>
 
-<form action="{% url 'state-delete' pk=state.pk %}" method="POST">
+<form action="{% url view_name pk=obj.pk %}" method="POST">
     {% csrf_token %}
     <h2>Are you sure you want to delete?</h2>
-    <h3>{{ state.name }} - {{ state.code }}</h3>
+    <h3>{{ obj }}</h3>
     <input type="submit" value="Delete">
 </form>
 
