@@ -12,7 +12,7 @@ from app.models.location.facility import Facility
 from app.models.location.state import State
 from app.models.parties.brokercompany import BrokerCompany
 from app.models.parties.carriercompany import CarrierCompany
-from app.models.unit.truck import TruckS
+from app.models.unit.truck import Truck
 from app.models.users.profile import Profile
 
 

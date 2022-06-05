@@ -14,6 +14,7 @@ from app.models.unit.trailer import Trailer
 from app.models.users.profile import Profile
 from file_generator.invoices import generate_invoice
 from maps.distances import DistanceCalculator
+from msg.messages import send_message
 
 
 class Load(Model):
@@ -89,6 +90,21 @@ class Load(Model):
         LoadFile(type=LoadFile.FileType.INVOICE, load=self, file=File(open(file_name))).save()
 
     class LoadManager:
+        @staticmethod
+        def dispatch(driver, load):
+            msg = 'PU: {pu_time}\nCompany: {pu_company}\nAddress: {pu_address}\n\nDEL: {del_time}\n' \
+                  'Company: {del_company}\nAddress: {del_address}\nLoad# {load_number}'
+            pu = load.LoadManager.get_first_pu_stage()
+            pu_time = '{} - {}'.format(pu.time_from, pu.time_to)
+            pu_company = pu.facility.name
+            pu_address = pu.facility.address
+            _del = load.LoadManager.get_last_del_stage()
+            del_time = '{} - {}'.format(_del.time_from, _del.time_to)
+            del_company = _del.facility.name
+            del_address = _del.facility.add
+            send_message(msg.format(pu_time=pu_time, pu_company=pu_company, pu_address=pu_address, del_time=del_time,
+                                    del_company=del_company, del_address=del_address))
+
         @staticmethod
         def clean_load_stages(load):
             from app.models.load.loadstage import LoadStage

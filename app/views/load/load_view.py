@@ -24,7 +24,7 @@ class LoadAddView(AddView):
 
                              })
         serializer.save()
-        return redirect('load-detail')
+        return redirect('load-list')
 
 
 class LoadDetailView(DetailView):

@@ -23,6 +23,7 @@ class Driver(Model):
     middle_name = CharField(max_length=35, null=True, blank=True)
     last_name = CharField(max_length=35)
     home_address = ForeignKey(Address, on_delete=RESTRICT)
+    chat_id = PositiveSmallIntegerField(null=True, blank=True)
     email = EmailField(unique=True)
     phone = PhoneNumberField(unique=True)
     license_number = CharField(max_length=10, validators=[validate_driver_license])
@@ -34,6 +35,7 @@ class Driver(Model):
     coordinator = ForeignKey(Profile, on_delete=SET_NULL, null=True, validators=[validate_coordinator])
     truck = OneToOneField(Truck, on_delete=RESTRICT, null=True, blank=True)
     company = ForeignKey(CarrierCompany, on_delete=CASCADE)
+
 
     class Meta:
         unique_together = ('license_number', 'license_state')
