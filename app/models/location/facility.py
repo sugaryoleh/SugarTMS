@@ -1,6 +1,6 @@
 from django.db.models import Model, AutoField, CharField, ForeignKey, RESTRICT, TextField, EmailField, FloatField
 from phonenumber_field.modelfields import PhoneNumberField
-from requests import HTTPError
+from urllib3.exceptions import HTTPError
 
 from .address import Address
 
@@ -28,7 +28,8 @@ class Facility(Model):
                 self.__setattr__(detail, details[detail])
         except HTTPError as error:
             print(error)
-        super(Facility, self).save(*args, **kwargs)
+        finally:
+            super(Facility, self).save(*args, **kwargs)
 
     def __str__(self):
         return '{}/ {},{}'.format(self.name, self.address.city, self.address.state.code)

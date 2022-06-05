@@ -208,7 +208,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='load',
             name='coordinator',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.RESTRICT, related_name='coordinator', to='location.profile', validators=[app.models.driver.validators.validate_coordinator]),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.RESTRICT, related_name='coordinator', to='location.users', validators=[app.models.driver.validators.validate_coordinator]),
         ),
         migrations.AddField(
             model_name='load',
@@ -218,7 +218,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='load',
             name='entered_by',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.RESTRICT, related_name='entered_by', to='location.profile'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.RESTRICT, related_name='entered_by', to='location.users'),
         ),
         migrations.CreateModel(
             name='File',
@@ -226,13 +226,13 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, serialize=False)),
                 ('file', models.FileField(upload_to=app.models.file_router.route)),
                 ('notes', models.CharField(blank=True, max_length=20, null=True)),
-                ('added_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='location.profile')),
+                ('added_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='location.users')),
             ],
         ),
         migrations.AddField(
             model_name='driver',
             name='coordinator',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='location.profile', validators=[app.models.driver.validators.validate_coordinator]),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='location.users', validators=[app.models.driver.validators.validate_coordinator]),
         ),
         migrations.AddField(
             model_name='driver',

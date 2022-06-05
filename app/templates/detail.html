@@ -1,23 +1,16 @@
+{% extends "index.html" %}
 {% load rest_framework %}
+{% load static %}
 
-<html><body>
+{% block title %}{{ title }}{% endblock %}
 
-<h1>View {{ title }}</h1>
-
+{% block content %}
 <form action="{% url view_name pk=pk %}" method="POST">
     {% csrf_token %}
-    {% for field in serializer %}
-        {% if field.name != 'url' %}
-            {% render_field field style=style %}
-        {% endif %}
-        {% if field.name in serializer.url_fields %}
-            <a href="{{ request.get_host }}/{{ field.name }}/add" target="_blank">Add new</a>
-        {% endif%}
-    {% endfor %}
+    {% render_form serializer %}
     <br><input type="submit" value="Save">
 </form>
 <form action="{% url delete_view_name pk=pk %}">
     <input type="submit" value="Delete" />
 </form>
-
-</body></html>
+{% endblock %}

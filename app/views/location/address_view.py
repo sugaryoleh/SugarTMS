@@ -1,6 +1,9 @@
 from app.models.location.address import Address
 from app.serializers.location.address_serializer import AddressSerializer
-from app.views.base import AddView, DetailView, DeleteView, ListView
+from app.views.base.add_view import AddView
+from app.views.base.delete_view import DeleteView
+from app.views.base.detail_view import DetailView
+from app.views.base.list_view import ListView
 
 
 class AddressAdd(AddView):
@@ -19,4 +22,5 @@ class AddressDelete(DeleteView):
 
 
 class AddressList(ListView):
+    serializer = AddressSerializer
     model = Address

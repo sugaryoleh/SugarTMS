@@ -4,6 +4,7 @@ from app.models.location.state import State
 
 
 class StateSerializer(HyperlinkedModelSerializer):
+    url_fields = []
 
     class Meta:
         model = State

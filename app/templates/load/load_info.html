@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+
+{% load rest_framework %}
+{% load static %}
+
+{% block title %}Add Load{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'load-detail' pk=pk %}">Profile</a>
+<a href="{% url 'load-stages' load=pk %}">Stages</a>
+
+{% block form %}
+{% endblock %}
+
+{% endblock %}

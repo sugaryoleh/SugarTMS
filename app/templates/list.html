@@ -1,8 +1,41 @@
-<html><body>
-<h1>{{ title }}</h1>
+{% extends "index.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block add %}
+<form class="form-inline my-2 my-lg-0" action="{% url add_view_name %}">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add</button>
+</form>
+{% endblock %}
+
+{% block content %}
 <ul>
-    {% for object in objects %}
-    <li><a href="{% url detail_view_name pk=object.id %}">{{ object }}</a></li>
-    {% endfor %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                {% for field in serializer %}
+                    {% if field.name != 'url' %}
+                        <th scope="col">{{ field.name }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+      </thead>
+      <tbody>
+        {% for object in objects %}
+        <tr class='clickable-row' data-href="{% url detail_view_name pk=object.id %}">
+            <th scope="row">{{ forloop.counter }}</th>
+            {% for field in serializer %}
+                {% if field.name != 'url' %}
+                    <td>{{ object|get_value:field.name }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 </ul>
-</body></html>
+{% endblock %}
+
+{% block script %}<script src="{% static 'list_view_scripts.js' %}"></script>{% endblock %}

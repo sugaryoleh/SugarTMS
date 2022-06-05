@@ -12,5 +12,5 @@ def validate_driver_license(value):
 
 def validate_coordinator(value):
     from app.models.users.profile import Profile
-    if not Profile.objects.get(pk=value).is_coordinator:
+    if not Profile.objects.get(pk=value.id).is_coordinator:
         raise ValidationError(_('User is not coordinator'))

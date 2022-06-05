@@ -1,0 +1,11 @@
+{% extends "load/load_info.html" %}
+{% load rest_framework %}
+{% load static %}
+
+{% block form %}
+<form action="{% url 'load-detail' pk=pk %}" method="POST">
+    {% csrf_token %}
+    {% render_form serializer %}
+    <br><input type="submit" value="Save">
+</form>
+{% endblock %}

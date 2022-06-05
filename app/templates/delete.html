@@ -1,14 +1,13 @@
-{% load rest_framework %}
+{% extends "index.html" %}
+{% load static %}
 
-<html><body>
+{% block title %}{{ title }}{% endblock %}
 
-<h1>Delete state</h1>
-
+{% block content %}
 <form action="{% url view_name pk=obj.pk %}" method="POST">
     {% csrf_token %}
     <h2>Are you sure you want to delete?</h2>
     <h3>{{ obj }}</h3>
     <input type="submit" value="Delete">
 </form>
-
-</body></html>
+{% endblock %}

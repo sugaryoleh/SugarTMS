@@ -1,0 +1,41 @@
+{% load rest_framework %}
+
+<html>
+<link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+    <body>
+
+    <h1>View {{ title }}</h1>
+
+    <div class="slider">
+
+      <a href="#slide-1">Profile</a>
+      <a href="#slide-2">Files</a>
+
+      <div class="slides" data-flickity='{ "cellAlign": "left", "contain": true }' >
+          <div id="slide-1" style="width:100%;">
+              <form action="{% url view_name pk=pk %}" method="POST">
+                  {% csrf_token %}
+                  {% for field in serializer %}
+                  {% if field.name != 'url' %}
+                    {% render_field field style=style %}
+                  {% endif %}
+                  {% if field.name in serializer.url_fields %}
+                  <a href="//{{ urls|get_item:field.name }}/add" target="_blank">Add new</a>
+                  {% endif %}
+                  {% endfor %}
+                  <br><input type="submit" value="Save">
+              </form>
+          </div>
+          <div id="slide-2" style="width:100%;">
+          2
+          </div>
+      </div>
+    </div>
+
+    <form action="{% url delete_view_name pk=pk %}">
+    <input type="submit" value="Delete" />
+    </form>
+
+    </body>
+<script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+</html>
