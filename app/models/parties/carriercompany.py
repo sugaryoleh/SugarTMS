@@ -15,7 +15,7 @@ class CarrierCompany(LogisticsCompany):
             raise Exception(_('The main Carrier Company must be created first'))
         elif (self.is_main and self.just_created() and not self.is_first()) or self.is_main_changed():
             raise Exception(_('The main Carrier Company must be set once'))
-        super(LogisticsCompany, self).save(args, kwargs)
+        super(CarrierCompany, self).save(args, kwargs)
 
     def just_created(self):
         return not CarrierCompany.objects.filter(pk=self.pk).exists()

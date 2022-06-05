@@ -1,4 +1,4 @@
-from django.db.models import Model, AutoField, CharField, ForeignKey, RESTRICT, BooleanField
+from django.db.models import Model, AutoField, CharField, ForeignKey, RESTRICT
 
 from app.models.location.address import Address
 from app.models.parties.validators import validate_MC_number, validate_DOT_number, validate_logistics_company_rate

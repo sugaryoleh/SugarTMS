@@ -53,18 +53,18 @@ class Load(Model):
         before = Load.objects.get(pk=self.id)
         return before.status != self.status
 
-    # def save(self, *args, **kwargs):
-    #     if self.just_created():
-    #         self.status = self.LoadStatus.SET_UP
-    #         self.total = self.rate
-    #     else:
-    #         if self.load_status_changed():
-    #             from app.models.load.loadhistoryevent import LoadHistoryEvents
-    #             LoadHistoryEvents.status_changed(self)
-    #     if not Load.LoadManager.perform_checks(self):
-    #         raise Exception("Inappropriate status {} for the load".format(self.status))
-    #
-    #     super(Load, self).save(*args, *kwargs)
+    def save(self, *args, **kwargs):
+        if self.just_created():
+            self.status = self.LoadStatus.SET_UP
+            self.total = self.rate
+        else:
+            if self.load_status_changed():
+                from app.models.load.loadhistoryevent import LoadHistoryEvents
+                LoadHistoryEvents.status_changed(self)
+        if not Load.LoadManager.perform_checks(self):
+            raise Exception("Inappropriate status {} for the load".format(self.status))
+
+        super(Load, self).save(*args, **kwargs)
 
     def __str__(self):
         first_pu = self.LoadManager.get_first_pu_stage(self)
