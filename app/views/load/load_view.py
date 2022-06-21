@@ -21,10 +21,20 @@ class LoadAddView(AddView):
             return Response({'title': self.model._meta.verbose_name.title(),
                              'view_name': 'load-add',
                              'serializer': serializer,
-
                              })
         serializer.save()
-        return redirect('load-detail')
+        load = Load.objects.get(order_number=serializer.data['order_number'])
+        return redirect('load-detail', pk=load.id)
+
+
+class Dispatch(APIView):
+    model = Load
+    serializer = LoadSerializer
+
+    def get(self, request, load):
+        load = Load.objects.get(pk=load)
+        Load.LoadManager.dispatch(None, load)
+        return redirect('load-detail', pk=load.id)
 
 
 class LoadDetailView(DetailView):

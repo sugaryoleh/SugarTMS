@@ -32,8 +32,9 @@ class LoadStageListAddView(APIView):
 
     def post(self, request, load):
         serializer = self.serializer(data=request.data, context={'request': request})
-
         if not serializer.is_valid():
+            print(serializer.data)
+
             return Response({'title': self.model._meta.verbose_name.title(),
                              'load': load,
                              'pk': load,

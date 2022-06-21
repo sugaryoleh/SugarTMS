@@ -7,7 +7,7 @@ from app.models.location.facility import Facility
 
 class LoadStage(Model):
     id = BigAutoField(primary_key=True)
-    type = BooleanField(default=True)
+    type = BooleanField(default=False)
     load = ForeignKey(Load, on_delete=CASCADE)
     order_number = PositiveSmallIntegerField()
     time_from = DateTimeField()

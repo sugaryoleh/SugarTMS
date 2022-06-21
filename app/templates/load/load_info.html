@@ -7,9 +7,15 @@
 
 {% block content %}
 
-<a href="{% url 'load-detail' pk=pk %}">Profile</a>
-<a href="{% url 'load-stages' load=pk %}">Stages</a>
-
+<form class="form-inline my-2 my-lg-0" action="{% url 'load-detail' pk=pk %}" method="GET">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Profile</button>
+</form>
+<form class="form-inline my-2 my-lg-0" action="{% url 'load-stages' load=pk %}" method="GET">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Stages</button>
+</form>
+<form class="form-inline my-2 my-lg-0" action="{% url 'load-dispatch' load=pk %}" method="GET">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Dispatch</button>
+</form>
 {% block form %}
 {% endblock %}
 

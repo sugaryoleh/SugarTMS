@@ -14,6 +14,7 @@ from app.models.unit.trailer import Trailer
 from app.models.users.profile import Profile
 from file_generator.invoices import generate_invoice
 from maps.distances import DistanceCalculator
+from msg.messages import send_message
 
 
 class Load(Model):
@@ -53,18 +54,19 @@ class Load(Model):
         before = Load.objects.get(pk=self.id)
         return before.status != self.status
 
-    # def save(self, *args, **kwargs):
-    #     if self.just_created():
-    #         self.status = self.LoadStatus.SET_UP
-    #         self.total = self.rate
-    #     else:
-    #         if self.load_status_changed():
-    #             from app.models.load.loadhistoryevent import LoadHistoryEvents
-    #             LoadHistoryEvents.status_changed(self)
-    #     if not Load.LoadManager.perform_checks(self):
-    #         raise Exception("Inappropriate status {} for the load".format(self.status))
-    #
-    #     super(Load, self).save(*args, *kwargs)
+    def save(self, *args, **kwargs):
+        if self.just_created():
+            self.status = self.LoadStatus.SET_UP
+            self.total = self.rate
+        else:
+            if self.load_status_changed():
+                from app.models.load.loadhistoryevent import LoadHistoryEvents
+                LoadHistoryEvents.status_changed(self)
+        if not Load.LoadManager.perform_checks(self):
+            raise Exception("Inappropriate status {} for the load".format(self.status))
+
+        super(Load, self).save(*args, **kwargs)
+
 
     def __str__(self):
         first_pu = self.LoadManager.get_first_pu_stage(self)
@@ -89,6 +91,21 @@ class Load(Model):
         LoadFile(type=LoadFile.FileType.INVOICE, load=self, file=File(open(file_name))).save()
 
     class LoadManager:
+        @staticmethod
+        def dispatch(driver, load):
+            msg = 'PU: {pu_time}\nCompany: {pu_company}\nAddress: {pu_address}\n\nDEL: {del_time}\n' \
+                  'Company: {del_company}\nAddress: {del_address}\nLoad# {load_number}'
+            pu = load.LoadManager.get_first_pu_stage(load)
+            pu_time = '{} - {}'.format(pu.time_from, pu.time_to)
+            pu_company = pu.facility.name
+            pu_address = pu.facility.address
+            _del = load.LoadManager.get_last_del_stage(load)
+            del_time = '{} - {}'.format(_del.time_from, _del.time_to)
+            del_company = _del.facility.name
+            del_address = _del.facility.address
+            send_message(msg.format(pu_time=pu_time, pu_company=pu_company, pu_address=pu_address, del_time=del_time,
+                                    del_company=del_company, del_address=del_address, load_number=load.order_number))
+
         @staticmethod
         def clean_load_stages(load):
             from app.models.load.loadstage import LoadStage

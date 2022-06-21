@@ -29,7 +29,7 @@ from app.views.parties.carriercompany_view import CarrierCompanyAdd, CarrierComp
 
 from app.views.driver.driver_view import DriverAdd, DriverDetail, DriverDelete, DriverList
 
-from app.views.load.load_view import LoadAddView, LoadListView, LoadDetailView
+from app.views.load.load_view import LoadAddView, LoadListView, LoadDetailView, Dispatch
 from app.views.load.loadstage_view import LoadStageListAddView
 from app.views.index import index
 
@@ -76,4 +76,5 @@ urlpatterns.append(path('loads/add',  LoadAddView.as_view(), name='load-add'))
 urlpatterns.append(path('loads/',  LoadListView.as_view(), name='load-list'))
 urlpatterns.append(path('loads/<int:pk>',  LoadDetailView.as_view(), name='load-detail'))
 urlpatterns.append(path('loads/<int:load>/stages',  LoadStageListAddView.as_view(), name='load-stages'))
+urlpatterns.append(path('loads/<int:load>/dispatch',  Dispatch.as_view(), name='load-dispatch'))
 urlpatterns.append(path('',  index, name='index'))
