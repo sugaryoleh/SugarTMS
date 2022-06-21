@@ -1,0 +1,25 @@
+{% extends "load/load_info.html" %}
+{% load rest_framework %}
+{% load static %}
+
+{% block form %}
+<div class="container">
+    <div class="row">
+        <div id="pu" class="col-4 d-flex justify-content-center">
+            {% for pick in picks %}
+                {{ pick }}
+            {% endfor %}
+        </div>
+        <div id="del" class="col-4 d-flex justify-content-center">
+            {% for del in dels %}
+                {{ del }}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<form action="{% url 'load-stages' load=load %}" method="POST">
+    {% csrf_token %}
+    {% render_form serializer %}
+    <br><input type="submit" value="Save">
+</form>
+{% endblock %}

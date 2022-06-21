@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block add %}
+<form class="form-inline my-2 my-lg-0" action="{% url add_view_name %}">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add</button>
+</form>
+{% endblock %}
+
+{% block content %}
+<ul>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                {% for column in hat %}
+                    <th scope="col">{{ column }}</th>
+                {% endfor %}
+            </tr>
+      </thead>
+      <tbody>
+        {% for object in data %}
+        <tr class='clickable-row' data-href="{% url detail_view_name pk=object.id %}">
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ object.first_name }}</td>
+            <td>{{ object.last_name }}</td>
+            <td>{{ object.email }}</td>
+            <td>{{ object.is_superuser }}</td>
+            <td>{{ object.is_coordinator }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</ul>
+{% endblock %}
+
+{% block script %}<script src="{% static 'list_view_scripts.js' %}"></script>{% endblock %}

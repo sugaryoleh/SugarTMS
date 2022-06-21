@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<form action="{% url view_name pk=obj.pk %}" method="POST">
+    {% csrf_token %}
+    <h2>Are you sure you want to delete?</h2>
+    <h3>{{ obj }}</h3>
+    <input type="submit" value="Delete">
+</form>
+{% endblock %}

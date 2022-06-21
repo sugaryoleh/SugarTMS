@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+{% load rest_framework %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<form action="{% url view_name pk=pk %}" method="POST">
+    {% csrf_token %}
+    {% render_form serializer %}
+    <br><input type="submit" value="Save">
+</form>
+<form action="{% url delete_view_name pk=pk %}">
+<input type="submit" value="Delete" />
+</form>
+{% endblock %}
