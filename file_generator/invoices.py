@@ -4,8 +4,9 @@ from docxtpl import DocxTemplate
 import os
 
 template_path = 'file_generator/templates/load-invoice.docx'
-doc_name = 'Invoice#{}'
+doc_name = 'Invoice{}'
 save_path = 'files/loads/invoices'
+final_path = 'loads/invoices'
 docx = '.docx'
 pdf = '.pdf'
 

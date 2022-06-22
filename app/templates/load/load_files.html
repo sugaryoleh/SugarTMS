@@ -1,0 +1,40 @@
+{% extends "load/load_info.html" %}
+{% load rest_framework %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block add %}
+<form class="form-inline my-2 my-lg-0" action="{% url 'load-invoice' load %}">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Invoice</button>
+</form>
+{% endblock %}
+
+{% block form %}
+<ul>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Type</th>
+                <th scope="col">Name</th>
+                <th scope="col">Added by</th>
+                <th scope="col">Notes</th>
+            </tr>
+      </thead>
+      <tbody>
+        {% for file in files %}
+        <tr class='clickable-row' data-href="{% url 'file-download' pk=file.id %}">
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ file.type }}</td>
+            <td>{{ file.name }}</td>
+            <td>{{ file.added_by }}</td>
+            <td>{{ file.notes }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</ul>
+{% endblock %}
+
+{% block script %}<script src="{% static 'list_view_scripts.js' %}"></script>{% endblock %}

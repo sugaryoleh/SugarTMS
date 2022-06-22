@@ -11,6 +11,7 @@ from app.views.base.add_view import AddView
 from app.views.base.detail_view import DetailView
 
 
+@permission_classes([IsAuthenticated])
 class LoadAddView(AddView):
     model = Load
     serializer = LoadSerializer

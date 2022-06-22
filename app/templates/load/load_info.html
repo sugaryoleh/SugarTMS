@@ -9,6 +9,9 @@
 
 <a href="{% url 'load-detail' pk=pk %}">Profile</a>
 <a href="{% url 'load-stages' load=pk %}">Stages</a>
+<a href="{% url 'load-accessorials' load=pk %}">Accessorials</a>
+<a href="{% url 'load-files' load=pk %}">Files</a>
+<a href="{% url 'load-history' load=pk %}">History</a>
 
 {% block form %}
 {% endblock %}

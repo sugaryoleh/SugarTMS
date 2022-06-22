@@ -12,5 +12,5 @@ def route(instance, filename):
         folder = 'trailers/{}/'.format(instance.trailer.id)
     elif instance.__class__ == LoadFile:
         folder = 'loads/{}/'.format(instance.load.id)
-    path = 'files/{}/{}'.format(folder, filename)
+    path = '{}/{}'.format(folder, filename)
     return path

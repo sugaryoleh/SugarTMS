@@ -1,0 +1,30 @@
+{% extends "load/load_info.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+
+{% block form %}
+<ul>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Time stamp</th>
+                <th scope="col">Text</th>
+            </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ event.datetime }}</td>
+            <td>{{ event.text }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</ul>
+{% endblock %}
+
+{% block script %}<script src="{% static 'list_view_scripts.js' %}"></script>{% endblock %}

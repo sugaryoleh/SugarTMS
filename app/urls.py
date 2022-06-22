@@ -31,6 +31,10 @@ from app.views.driver.driver_view import DriverAdd, DriverDetail, DriverDelete, 
 
 from app.views.load.load_view import LoadAddView, LoadListView, LoadDetailView
 from app.views.load.loadstage_view import LoadStageListAddView
+from app.views.load.loadhistory_view import LoadHistoryView
+from app.views.load.accessorials_view import AccessorialsView
+from app.views.load.loadfiles_view import LoadFilesView, download_load_file_view, LoadInvoiceView
+
 from app.views.index import index
 
 
@@ -76,4 +80,9 @@ urlpatterns.append(path('loads/add',  LoadAddView.as_view(), name='load-add'))
 urlpatterns.append(path('loads/',  LoadListView.as_view(), name='load-list'))
 urlpatterns.append(path('loads/<int:pk>',  LoadDetailView.as_view(), name='load-detail'))
 urlpatterns.append(path('loads/<int:load>/stages',  LoadStageListAddView.as_view(), name='load-stages'))
+urlpatterns.append(path('loads/<int:load>/history',  LoadHistoryView.as_view(), name='load-history'))
+urlpatterns.append(path('loads/<int:load>/accessorials',  AccessorialsView.as_view(), name='load-accessorials'))
+urlpatterns.append(path('loads/<int:load>/files',  LoadFilesView.as_view(), name='load-files'))
+urlpatterns.append(path('loads/download/<int:pk>',  download_load_file_view, name='file-download'))
+urlpatterns.append(path('loads/<int:load>/invoice',  LoadInvoiceView.as_view(), name='load-invoice'))
 urlpatterns.append(path('',  index, name='index'))

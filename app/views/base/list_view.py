@@ -12,11 +12,12 @@ class ListView(APIView):
     model = None
     serializer = None
 
+    def get_queryset(self):
+        return self.model.objects.all()
+
     def get(self, request):
-        queryset = self.model.objects.all()
+        queryset = self.get_queryset()
         serializer = self.serializer(context={'request': request})
-        for f in serializer:
-            print(f.__dict__)
         return Response({'objects': queryset,
                          'serializer': serializer,
                          'add_view_name': '{}-add'.format(self.model._meta.verbose_name_raw.replace(' ', '')),

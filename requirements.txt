@@ -67,3 +67,12 @@ General Options:
                               incompatible.
   --use-deprecated <feature>  Enable deprecated functionality, that will be
                               removed in the future.
+
+Django~=4.0.4
+djangorestframework~=3.13.1
+DateTime~=4.4
+urllib3~=1.26.9
+inflect~=5.6.0
+telepot~=12.7
+requests~=2.27.1
+docxtpl~=0.16.0

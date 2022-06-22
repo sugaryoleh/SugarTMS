@@ -87,7 +87,7 @@ class Load(Model):
         carrier = CarrierCompany.objects.get(is_main=True)
         file_name = generate_invoice(self, carrier)
         from app.models.load.loadfile import LoadFile
-        LoadFile(type=LoadFile.FileType.INVOICE, load=self, file=File(open(file_name))).save()
+        LoadFile(type=LoadFile.FileType.INVOICE, load=self, file=File(open(file_name, 'rb'))).save()
 
     class LoadManager:
         @staticmethod
